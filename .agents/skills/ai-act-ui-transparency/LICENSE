@@ -1,0 +1,81 @@
+Skill Protection License
+========================
+
+Copyright (c) 2026 Mario DE WEERD ("mdeweerd"). All rights reserved.
+
+BASE LICENSE AND MODIFICATION
+------------------------------
+
+This skill is offered under the Creative Commons Attribution-NoDerivatives
+4.0 International Public License (CC BY-ND 4.0),
+https://creativecommons.org/licenses/by-nd/4.0/legalcode, MODIFIED by the
+Additional Restrictions stated below.
+
+Because of these restrictions this is NOT the plain CC BY-ND 4.0 license.
+Where the Additional Restrictions conflict with the base license or with any
+other term, the Additional Restrictions prevail.
+
+ADDITIONAL RESTRICTIONS (BINDING, READ BEFORE ANY REDISTRIBUTION)
+-----------------------------------------------------------------
+
+1. No unauthorized republication on skill platforms.
+
+   Republishing, listing, indexing, aggregating, mirroring, offering or
+   distributing this skill, in whole or in part, on any platform or service
+   that republishes or distributes AI agent skills (skill marketplace,
+   registry, directory, rating or ranking service, or any equivalent
+   service) requires the prior written authorization of the copyright
+   holder.
+
+2. No modification and no paid modification by platforms.
+
+   A platform or service as defined in restriction 1 must not modify this
+   skill, in whole or in part. A platform or service as defined in
+   restriction 1 must not request or accept payment, or any other
+   consideration, for modifying, adapting or republishing this skill.
+
+3. Unauthorized republication indemnity.
+
+   Any publication in breach of restriction 1 or 2 incurs an indemnity of
+   EUR 200 (two hundred euros) per day and per skill published, payable to
+   mdeweerd or to the company designated by him. No prior formal notice
+   (mise en demeure) is required for this indemnity to become due.
+
+4. External data-collection modification indemnity.
+
+   Any modified version of this skill that contains instructions to send,
+   upload, transmit, report or rate information to a foreign or external
+   service (for example skill rating, usage telemetry, or any reporting to
+   a third-party service) incurs an additional indemnity of EUR 2,000
+   (two thousand euros) per day and per skill, payable to mdeweerd or to
+   the company designated by him. No prior formal notice (mise en demeure)
+   is required for this indemnity to become due.
+
+PERMITTED USE
+-------------
+
+Any use of this skill that does not consist of republication on a platform
+or service as defined in restriction 1 is permitted, in particular:
+
+- effective use of the skill within an open-source project;
+- effective use of the skill within an internal (private) project;
+- keeping a copy in an agent configuration directory of such a project,
+  for example .agents/skills/<skill-name>/;
+- modifying the skill for the exclusive needs of the uses listed above,
+  provided the modified version is not republished on a platform or
+  service as defined in restriction 1.
+
+AUTHORIZATION
+-------------
+
+A request for authorization under restriction 1 must be made in writing
+to mdeweerd and accepted in writing by him. Without such written
+authorization, republication is prohibited.
+
+LICENSE REPRODUCTION (MANDATORY)
+--------------------------------
+
+This LICENSE file is an integral part of the skill. The complete and
+unaltered text of this LICENSE file must be reproduced and kept together
+with the skill, in the same directory, whenever the skill is copied,
+exported, shared or used.

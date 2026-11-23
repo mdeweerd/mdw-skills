@@ -1,0 +1,131 @@
+# Security scan of all skills with SkillSpector (NVIDIA/SkillSpector).
+# Static analysis only (--no-llm): no API key needed.
+#
+# GitHub adaptation of the GitLab CI scan pipeline used in the private
+# skills repository. Dropped for GitHub Actions: the pre-built scanner
+# image and its monthly refresh (SkillSpector is installed in the job),
+# the per-skill GitLab job cache (re-scan is cheap in a small repo), and
+# the Pages dashboard (reports are uploaded as workflow artifacts).
+# Kept: the scan policy.
+#   - Every skill directory under .agents/skills/ (SKILL.md manifest, or a
+#     direct *.aisop.json AISOP bundle) is scanned separately; per-skill
+#     scans accept a committed .skillspector-baseline.yaml, which
+#     suppresses accepted findings before scoring.
+#   - skillspector exit 1 (max risk score above its internal threshold) is
+#     tolerated per skill: the findings policy is enforced by the gate,
+#     not by the exit code.
+#   - Exit 2 (real scan error) is recorded per skill and fails the gate.
+#   - The gate fails when any active finding is at or above
+#     GATE_MIN_SEVERITY (default HIGH), and fails closed on an unreadable
+#     report, a scan error, or a missing scan result.
+
+name: skills-scan
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+  schedule:
+    # Monthly re-scan with the latest SkillSpector release
+    - cron: "0 6 1 * *"
+
+env:
+  # Pin a SkillSpector release tag (e.g. v2.13.1) to force a version;
+  # empty resolves the newest stable GitHub release at run time.
+  SKILLSPECTOR_VERSION: ""
+  # Gate severity: LOW | MEDIUM | HIGH | CRITICAL
+  GATE_MIN_SEVERITY: HIGH
+
+permissions:
+  contents: read
+
+jobs:
+  skills-scan:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Resolve SkillSpector version
+        run: |
+          VERSION="${SKILLSPECTOR_VERSION}"
+          if [ -z "$VERSION" ]; then
+            VERSION=$(curl -fsSL https://api.github.com/repos/NVIDIA/SkillSpector/releases/latest | jq -r .tag_name)
+          fi
+          echo "SKILLSPECTOR_VERSION_RESOLVED=$VERSION" >> "$GITHUB_ENV"
+          echo "SkillSpector version: $VERSION"
+
+      - name: Install SkillSpector
+        run: |
+          python -m pip install --upgrade pip
+          pip install "skillspector @ git+https://github.com/NVIDIA/SkillSpector.git@${SKILLSPECTOR_VERSION_RESOLVED}"
+
+      - name: Scan every skill
+        run: |
+          skillspector --version
+          mkdir -p reports/by-skill
+          python3 .github/scripts/list_skill_dirs.py .agents/skills > reports/skill-dirs.txt
+          if [ ! -s reports/skill-dirs.txt ]; then
+            echo "FATAL: no skill directories found" >&2
+            exit 2
+          fi
+          SCANNED_COUNT=0
+          ERROR_COUNT=0
+          while IFS= read -r D; do
+            echo "=== skill: $D (scanning)"
+            BASELINE_OPT=""
+            if [ -f ".agents/skills/$D/.skillspector-baseline.yaml" ]; then
+              BASELINE_OPT="--baseline .agents/skills/$D/.skillspector-baseline.yaml"
+              echo "    using baseline .skillspector-baseline.yaml"
+            fi
+            set +e
+            skillspector scan ".agents/skills/$D" --no-llm --format json --output "reports/by-skill/$D.json" $BASELINE_OPT
+            RC=$?
+            set -e
+            if [ "$RC" -eq 2 ]; then
+              echo "{\"name\": \"$D\", \"error\": \"skillspector scan exited with code 2\"}" > "reports/by-skill/$D.error"
+              ERROR_COUNT=$((ERROR_COUNT + 1))
+            elif [ -f "reports/by-skill/$D.json" ]; then
+              rm -f "reports/by-skill/$D.error"
+              SCANNED_COUNT=$((SCANNED_COUNT + 1))
+            else
+              echo "{\"name\": \"$D\", \"error\": \"no report produced (exit code $RC)\"}" > "reports/by-skill/$D.error"
+              ERROR_COUNT=$((ERROR_COUNT + 1))
+            fi
+          done < reports/skill-dirs.txt
+          echo "Skill scan summary: $SCANNED_COUNT scanned, $ERROR_COUNT error(s)"
+
+      - name: Coverage check and merge
+        run: |
+          python3 - <<'PYEOF'
+          import sys
+          from pathlib import Path
+          expected = [l.strip() for l in open("reports/skill-dirs.txt") if l.strip()]
+          missing = [d for d in expected
+                     if not (Path(f"reports/by-skill/{d}.json").is_file()
+                             or Path(f"reports/by-skill/{d}.error").is_file())]
+          if missing:
+              print(f"FATAL: no scan result for skill directory(ies): {', '.join(missing)}", file=sys.stderr)
+              sys.exit(2)
+          print(f"Coverage: {len(expected)} skill directory(ies) all produced a scan result")
+          PYEOF
+          python3 .github/scripts/merge_skill_reports.py \
+            --repo-root .agents/skills --reports-dir reports/by-skill \
+            --out reports/skillspector-report.json
+          # Fail closed when the merged report was not written (real scan error)
+          test -f reports/skillspector-report.json
+
+      - name: Gate
+        run: python3 .github/scripts/check_gate.py reports/skillspector-report.json
+
+      - name: Upload reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: skillspector-reports
+          path: reports/
+          retention-days: 30
