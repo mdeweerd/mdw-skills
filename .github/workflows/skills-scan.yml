@@ -3,9 +3,18 @@
 #
 # GitHub adaptation of the GitLab CI scan pipeline used in the private
 # skills repository. Dropped for GitHub Actions: the pre-built scanner
-# image and its monthly refresh (SkillSpector is installed in the job),
-# the per-skill GitLab job cache (re-scan is cheap in a small repo), and
-# the Pages dashboard (reports are uploaded as workflow artifacts).
+# image and its monthly refresh (SkillSpector is installed in the job)
+# and the per-skill GitLab job cache (re-scan is cheap in a small repo).
+# Kept: the single-page HTML dashboard from the GitLab Pages job - here it
+# is generated into public/, uploaded as a workflow artifact, and committed
+# back to the repo as docs/skillspector-report.html via a bot PR (same method
+# as the stats workflow in stats.yaml). The page embeds the full report JSON
+# (const DATA = ...), so the JSON itself is not published separately.
+#
+# Loop gate: the bot PR that updates docs/skillspector-report.html triggers a
+# new push run. The "changes" job detects a push that changed ONLY the report
+# file, and the scan/publish jobs are skipped in that case - unless the run
+# was triggered manually (workflow_dispatch) or by the planned schedule.
 # Kept: the scan policy.
 #   - Every skill directory under .agents/skills/ (SKILL.md manifest, or a
 #     direct *.aisop.json AISOP bundle) is scanned separately; per-skill
@@ -41,10 +50,52 @@ permissions:
   contents: read
 
 jobs:
-  skills-scan:
+  # Gate against report-update loops: on a push, check whether the only
+  # changed file is the generated report. outputs.only-report=true means
+  # "nothing but docs/skillspector-report.html changed, skip the run".
+  changes:
     runs-on: ubuntu-latest
+    outputs:
+      only-report: ${{ steps.check.outputs.only-report }}
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - id: check
+        run: |
+          if [ "${{ github.event_name }}" != "push" ]; then
+            # PRs, manual and scheduled runs are never skipped by this gate.
+            echo "only-report=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          if git diff --name-only "${{ github.event.before }}" "${{ github.sha }}" > /tmp/changed.txt 2>/dev/null; then
+            CHANGED=$(sort /tmp/changed.txt)
+          else
+            # Cannot determine the changed files (e.g. force push): do not skip.
+            echo "could not diff ${{ github.event.before }}..${{ github.sha }}, not skipping" >&2
+            echo "only-report=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          echo "changed files:"; echo "$CHANGED"
+          NON_REPORT=$(echo "$CHANGED" | grep -v '^docs/skillspector-report\.html$' || true)
+          if [ -n "$CHANGED" ] && [ -z "$NON_REPORT" ]; then
+            echo "only-report=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "only-report=false" >> "$GITHUB_OUTPUT"
+          fi
+
+  skills-scan:
+    # Skip only when a push changed nothing but the generated report; manual
+    # (workflow_dispatch) and planned (schedule) runs always execute.
+    if: ${{ github.event_name == 'workflow_dispatch' || github.event_name == 'schedule' || needs.changes.outputs.only-report == 'false' }}
+    needs: changes
+    runs-on: ubuntu-latest
+    steps:
+      # Full history: the dashboard "last change" column needs the last
+      # commit date of every skill directory (GitLab used GIT_DEPTH: "0").
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - uses: actions/setup-python@v5
         with:
@@ -119,6 +170,19 @@ jobs:
           # Fail closed when the merged report was not written (real scan error)
           test -f reports/skillspector-report.json
 
+      - name: Build HTML dashboard
+        run: |
+          # Last commit date per skill directory (dashboard "last change" column)
+          python3 .github/scripts/collect_git_dates.py .agents/skills > reports/skill-dates.json
+          # Single-page dashboard (same generator as the GitLab Pages job in
+          # the skills repo; no --previous-url here, so all findings count as NEW)
+          python3 .github/scripts/generate_report_page.py \
+            --report reports/skillspector-report.json \
+            --dates reports/skill-dates.json \
+            --out public/
+          # The JSON report is NOT published alongside the page: it is already
+          # embedded in index.html and stays available in the workflow artifact.
+
       - name: Gate
         run: python3 .github/scripts/check_gate.py reports/skillspector-report.json
 
@@ -127,5 +191,65 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: skillspector-reports
-          path: reports/
+          path: |
+            reports/
+            public/
           retention-days: 30
+
+  publish-report:
+    # Add the generated HTML report to the project, using the same method as
+    # the stats workflow (stats.yaml): commit docs/skillspector-report.html on
+    # a bot branch and land it on main through a squash-merged PR (branch
+    # protection requires PRs). Only the HTML page is committed; it embeds the
+    # full skillspector-report.json, which is not published as a separate file
+    # (it remains available in the skillspector-reports artifact above).
+    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main' && (github.event_name == 'workflow_dispatch' || github.event_name == 'schedule' || needs.changes.outputs.only-report == 'false')
+    needs: [changes, skills-scan]
+    permissions:
+      contents: write
+      pull-requests: write
+    runs-on: ubuntu-latest
+    steps:
+      # Check out the main branch (not the triggering ref): the report update
+      # must land on main via a pull request.
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: skillspector-reports
+          path: downloaded-reports
+
+      - name: Commit report
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RUN_ID: ${{ github.run_id }}
+        run: |
+          mkdir -p docs
+          cp downloaded-reports/public/index.html docs/skillspector-report.html
+          git config user.name github-actions
+          git config user.email github-actions@github.com
+          git add docs/skillspector-report.html
+          if git diff --cached --quiet; then
+            echo "docs/skillspector-report.html unchanged - nothing to do"
+            exit 0
+          fi
+          git checkout -b bot/skillspector-report-${RUN_ID}
+          git commit -m '[Bot] skills-scan - Update docs/skillspector-report.html'
+          git push -u origin bot/skillspector-report-${RUN_ID}
+          gh pr create --base main --head bot/skillspector-report-${RUN_ID} \
+            --title '[Bot] skills-scan - Update skillspector report' \
+            --body 'Automated skillspector HTML report update (embeds skillspector-report.json).'
+          PR=$(gh pr view --json number -q .number)
+          echo "Opened PR #${PR}"
+          for i in 1 2 3 4 5; do
+            if gh pr merge "${PR}" --squash --delete-branch; then
+              echo "Merged PR #${PR}"
+              exit 0
+            fi
+            sleep 5
+          done
+          echo "Failed to merge PR #${PR}" >&2
+          exit 1

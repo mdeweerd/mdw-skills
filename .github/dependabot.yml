@@ -1,0 +1,40 @@
+version: 2
+
+multi-ecosystem-groups:
+  infrastructure:
+    schedule:
+      interval: "weekly"
+
+# 'package-ecosystem' values: npm, bundler, composer, devcontainers, dotnet-sdk, maven, mix, cargo, gradle, nuget, gomod, docker, docker-compose, elm, gitsubmodule, github-actions, pip, terraform, pub, rust-toolchain, sbt, swift, bun, uv, vcpkg, helm, conda, julia, bazel, opentofu, pre-commit, nix, denoo
+updates:
+  # This repo ships skill manifests and GitHub workflows only: no Python
+  # manifests, no .pre-commit-config.yaml, no containers. Only github-actions
+  # below is active; the other ecosystems are kept commented out as templates.
+
+  #  - package-ecosystem: "pip"
+  #    directory: "/"
+  #    patterns: ["*"]
+  #    multi-ecosystem-group: "infrastructure"
+
+  #  - package-ecosystem: "pre-commit"
+  #    directory: "/"
+  #    patterns: ["*"]
+  #    multi-ecosystem-group: "infrastructure"
+
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    patterns: ["*"]
+    #patterns: ["aws", "terraform-*"]
+    multi-ecosystem-group: "infrastructure"
+
+#  - package-ecosystem: "docker"
+#    directory: "/"
+#    patterns: ["*"]
+#    #patterns: ["nginx", "redis", "postgres"]
+#    multi-ecosystem-group: "infrastructure"
+#
+#  - package-ecosystem: "docker-compose"
+#    directory: "/"
+#    patterns: ["*"]
+#    #patterns: ["nginx", "redis", "postgres"]
+#    multi-ecosystem-group: "infrastructure"

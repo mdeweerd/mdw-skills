@@ -3,6 +3,19 @@ Skill Protection License
 
 Copyright (c) 2026 Mario DE WEERD ("mdeweerd"). All rights reserved.
 
+LANGUAGE VERSIONS / VERSIONS LINGUISTIQUES
+------------------------------------------
+
+The complete French translation at the end of this file is the official
+reference for this license and for any court dispute (référence
+officielle, fait foi). The English text above is provided for information
+only.
+
+La traduction française complète en fin de ce fichier est la référence
+officielle de la présente licence et de tout litige soumis aux tribunaux
+(référence officielle, fait foi). Le texte anglais ci-dessus est fourni à
+titre informatif uniquement.
+
 BASE LICENSE AND MODIFICATION
 ------------------------------
 
@@ -72,10 +85,124 @@ A request for authorization under restriction 1 must be made in writing
 to mdeweerd and accepted in writing by him. Without such written
 authorization, republication is prohibited.
 
+COMPETENT COURT AND JURISDICTION / TRIBUNAL COMPÉTENT
+------------------------------------------------------
+
+Any dispute relating to this license or to the skill shall be submitted to
+the exclusive jurisdiction of the Tribunal de commerce de Pontoise -
+France, which is the competent court. The French version at the end of
+this file is the official reference and prevails; this English text is
+provided for information only.
+
+Tout litige relatif à la présente licence ou au skill est soumis à la
+compétence exclusive du Tribunal de commerce de Pontoise - France, qui est
+le tribunal compétent. (La version française en fin de fichier est la
+référence officielle et fait foi ; le texte anglais est informatif.)
+
 LICENSE REPRODUCTION (MANDATORY)
 --------------------------------
 
 This LICENSE file is an integral part of the skill. The complete and
-unaltered text of this LICENSE file must be reproduced and kept together
-with the skill, in the same directory, whenever the skill is copied,
-exported, shared or used.
+unaltered text of this LICENSE file, in both language versions, must be
+reproduced and kept together with the skill, in the same directory,
+whenever the skill is copied, exported, shared or used.
+
+
+VERSION FRANÇAISE - RÉFÉRENCE OFFICIELLE (FAIT FOI)
+===================================================
+
+Licence de Protection de Skill
+==============================
+
+Copyright (c) 2026 Mario DE WEERD (« mdeweerd »). Tous droits réservés.
+
+LICENCE DE BASE ET MODIFICATION
+-------------------------------
+
+Ce skill est offert sous la Licence Creative Commons Attribution - Pas de
+Modification 4.0 International (CC BY-ND 4.0),
+https://creativecommons.org/licenses/by-nd/4.0/legalcode, MODIFIÉE par les
+Restrictions Additionnelles énoncées ci-dessous.
+
+En raison de ces restrictions, il ne s'agit PAS de la licence CC BY-ND 4.0
+standard. Lorsque les Restrictions Additionnelles entrent en conflit avec
+la licence de base ou avec toute autre clause, les Restrictions
+Additionnelles priment.
+
+RESTRICTIONS ADDITIONNELLES (OBLIGATOIRES, À LIRE AVANT TOUTE REDISTRIBUTION)
+-----------------------------------------------------------------------------
+
+1. Aucune republication non autorisée sur les plateformes de skills.
+
+   La republication, l'inscription, l'indexation, l'agrégation, la mise en
+   miroir, l'offre ou la distribution de ce skill, en tout ou partie, sur
+   toute plateforme ou tout service qui republie ou distribue des skills
+   d'agents IA (marketplace de skills, registre, annuaire, service de
+   notation ou de classement, ou tout service équivalent) nécessitent
+   l'autorisation écrite préalable du titulaire des droits d'auteur.
+
+2. Aucune modification, et aucune modification rémunérée, par les
+   plateformes.
+
+   Une plateforme ou un service tel que défini à la restriction 1 ne doit
+   pas modifier ce skill, en tout ou partie. Une plateforme ou un service
+   tel que défini à la restriction 1 ne doit ni demander ni accepter de
+   paiement, ou toute autre contrepartie, pour modifier, adapter ou
+   republier ce skill.
+
+3. Indemnité pour republication non autorisée.
+
+   Toute publication en violation de la restriction 1 ou 2 entraîne une
+   indemnité de 200 EUR (deux cents euros) par jour et par skill publié,
+   payable à mdeweerd ou à la société désignée par lui. Aucune mise en
+   demeure préalable n'est requise pour que cette indemnité soit exigible.
+
+4. Indemnité pour modification avec collecte de données externes.
+
+   Toute version modifiée de ce skill contenant des instructions destinées
+   à envoyer, téléverser, transmettre, signaler ou évaluer des informations
+   vers un service étranger ou externe (par exemple la notation des skills,
+   la télémétrie d'usage, ou tout signalement à un service tiers) entraîne
+   une indemnité supplémentaire de 2 000 EUR (deux mille euros) par jour
+   et par skill, payable à mdeweerd ou à la société désignée par lui.
+   Aucune mise en demeure préalable n'est requise pour que cette indemnité
+   soit exigible.
+
+UTILISATION AUTORISÉE
+---------------------
+
+Toute utilisation de ce skill autre que la republication sur une plateforme
+ou un service tel que défini à la restriction 1 est autorisée, notamment :
+
+- l'utilisation effective du skill au sein d'un projet open-source ;
+- l'utilisation effective du skill au sein d'un projet interne (privé) ;
+- la conservation d'une copie dans le répertoire de configuration d'agent
+  d'un tel projet, par exemple .agents/skills/<nom-du-skill>/ ;
+- la modification du skill pour les besoins exclusifs des utilisations
+  listées ci-dessus, à condition que la version modifiée ne soit pas
+  republiée sur une plateforme ou un service tel que défini à la
+  restriction 1.
+
+AUTORISATION
+------------
+
+Toute demande d'autorisation au titre de la restriction 1 doit être adressée
+par écrit à mdeweerd et acceptée par écrit par lui. À défaut d'une telle
+autorisation écrite, la republication est interdite.
+
+TRIBUNAL COMPÉTENT
+------------------
+
+Tout litige relatif à la présente licence ou au skill est soumis à la
+compétence exclusive du Tribunal de commerce de Pontoise - France, qui est
+le tribunal compétent. La présente version française est la référence
+officielle pour tout litige soumis aux tribunaux et fait foi ; le texte
+anglais est fourni à titre informatif uniquement.
+
+REPRODUCTION DE LA LICENCE (OBLIGATOIRE)
+----------------------------------------
+
+Ce fichier LICENSE fait partie intégrante du skill. Le texte complet et non
+modifié de ce fichier LICENSE, dans ses deux versions linguistiques, doit
+être reproduit et conservé avec le skill, dans le même répertoire, à chaque
+fois que le skill est copié, exporté, partagé ou utilisé.
