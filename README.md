@@ -30,10 +30,7 @@ SkillSpector (NVIDIA/SkillSpector) security scan of every skill
 .skillspector-baseline.yaml to suppress accepted findings before scoring.
 
 Latest scan result (auto-updated on main by the pipeline):
-<a href="https://cdn.jsdelivr.net/gh/mdeweerd/mdw-skills@main/docs/skillspector-report.html" target="skillspector-report">Skills security report (SkillSpector dashboard)</a>
-(served from the repo via the jsdelivr GitHub domain, so the page renders
-with its scripts; the raw-content equivalent is
-https://raw.githubusercontent.com/mdeweerd/mdw-skills/main/docs/skillspector-report.html)
+<a href="https://htmlpreview.github.io/?https://raw.githubusercontent.com/mdeweerd/mdw-skills/main/docs/skillspector-report.html" target="skillspector-report">Skills security report (SkillSpector dashboard)</a>
 
 ## Repository rules (binding)
 
