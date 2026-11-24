@@ -29,6 +29,12 @@ SkillSpector (NVIDIA/SkillSpector) security scan of every skill
 (GATE_MIN_SEVERITY, default HIGH). A skill may carry a committed
 .skillspector-baseline.yaml to suppress accepted findings before scoring.
 
+Latest scan result (auto-updated on main by the pipeline):
+<a href="https://cdn.jsdelivr.net/gh/mdeweerd/mdw-skills@main/docs/skillspector-report.html" target="skillspector-report">Skills security report (SkillSpector dashboard)</a>
+(served from the repo via the jsdelivr GitHub domain, so the page renders
+with its scripts; the raw-content equivalent is
+https://raw.githubusercontent.com/mdeweerd/mdw-skills/main/docs/skillspector-report.html)
+
 ## Repository rules (binding)
 
 1. Each skill lives in `.agents/skills/<skill-name>/` and contains at least `SKILL.md` (agentskills.io format, English) and `LICENSE` (complete, unaltered).
