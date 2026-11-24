@@ -58,7 +58,7 @@ jobs:
     outputs:
       only-report: ${{ steps.check.outputs.only-report }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           fetch-depth: 0
       - id: check
@@ -93,11 +93,11 @@ jobs:
     steps:
       # Full history: the dashboard "last change" column needs the last
       # commit date of every skill directory (GitLab used GIT_DEPTH: "0").
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           fetch-depth: 0
 
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@v7
         with:
           python-version: "3.12"
 
@@ -188,7 +188,7 @@ jobs:
 
       - name: Upload reports
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: skillspector-reports
           path: |
@@ -212,12 +212,12 @@ jobs:
     steps:
       # Check out the main branch (not the triggering ref): the report update
       # must land on main via a pull request.
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           ref: main
           fetch-depth: 0
 
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v8
         with:
           name: skillspector-reports
           path: downloaded-reports
